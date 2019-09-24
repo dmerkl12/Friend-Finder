@@ -13,7 +13,9 @@ const PORT = process.env.PORT || 8080;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const routes = require("./app/routing/htmlRoutes")
 
+app.use(routes)
 
 // Start our server so that it can begin listening to client requests.
 app.listen(PORT, function () {
