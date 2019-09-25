@@ -14,6 +14,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="/app/css/styles.css" />
 </head>
 
 <body>
@@ -24,9 +25,9 @@
         <hr />
         <h3><strong>About You</strong></h3>
         <h4>Name (Required)</h4>
-        <input type="text" name="" id="name" class="form-control" required />
+        <input type="text" name="" id="name-input" class="form-control" required />
         <h4>Link to photo (Required)</h4>
-        <input type="text" name="" id="photo" class="form-control" required />
+        <input type="text" name="" id="photo-input" class="form-control" required />
         <hr />
 
         <h3><strong>Question 1</strong></h3>
@@ -118,7 +119,8 @@
         </select>
 
         <h3><strong>Question 9</strong></h3>
-        <h4>You think that everyone’s views should be respected regardless of whether they are supported by facts or not.</h4>
+        <h4>You think that everyone’s views should be respected regardless of whether they are supported by facts or
+            not.</h4>
         <select data-placeholder="" class="chosen-select" id="q9">
             <option value=""></option>
             <option value="1">1 (Strongly Disagree)</option>
@@ -151,6 +153,94 @@
                 </p>
             </div>
         </footer>
+        <!-- modal -->
+        <div id="results-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h2 class="modal-title">
+                            <strong>Best Match</strong>
+                        </h2>
+                    </div>
+                    <div class="modal-body">
+                        <h2 id="modal-name"></h2>
+                        <img id="modal-photo" src="https://via.placeholder.com" alt="Dan">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" id="close-button" data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
+<script>
+
+    function modal(res) {
+
+        document.getElementById("modal-name").innerHTML = res.name;
+        document.getElementById("modal-photo").setAttribute("src", res.photo);
+        document.getElementById("results-modal").style.display = "block";
+        document.getElementById("close-button").addEventListener("click", function () {
+            document.getElementById("results-modal").style.display = "none"
+        })
+
+    }
+
+    document.getElementById("submit").addEventListener("click", function () {
+        event.preventDefault();
+
+        if (document.getElementById("name-input").value === "" ||
+            document.getElementById("photo-input").value === "" ||
+            document.getElementById("q1").value === "" ||
+            document.getElementById("q2").value === "" ||
+            document.getElementById("q3").value === "" ||
+            document.getElementById("q4").value === "" ||
+            document.getElementById("q5").value === "" ||
+            document.getElementById("q6").value === "" ||
+            document.getElementById("q7").value === "" ||
+            document.getElementById("q8").value === "" ||
+            document.getElementById("q9").value === "" ||
+            document.getElementById("q10").value === "") {
+            alert("Please fill in everything before you try to submit")
+            return false;
+        }
+
+        let userData = {
+            name: document.getElementById("name-input").value.trim(),
+            photo: document.getElementById("photo-input").value.trim(),
+            scores:
+                [
+                    parseInt(document.getElementById("q1").value.trim()),
+                    parseInt(document.getElementById("q2").value.trim()),
+                    parseInt(document.getElementById("q3").value.trim()),
+                    parseInt(document.getElementById("q4").value.trim()),
+                    parseInt(document.getElementById("q5").value.trim()),
+                    parseInt(document.getElementById("q6").value.trim()),
+                    parseInt(document.getElementById("q7").value.trim()),
+                    parseInt(document.getElementById("q8").value.trim()),
+                    parseInt(document.getElementById("q9").value.trim()),
+                    parseInt(document.getElementById("q10").value.trim())
+                ]
+        }
+        fetch("/api/friends", {
+            method: "POST",
+            body: JSON.stringify(userData),
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((res) => res.json())
+            .then(function (res) {
+                modal(res);
+            });
+    })
+
+
+</script>
 
 </html>
